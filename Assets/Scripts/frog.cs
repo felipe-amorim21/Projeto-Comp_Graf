@@ -9,6 +9,8 @@ public class frog : MonoBehaviour
     private Rigidbody2D rb;
     private bool isJumping = false;
     private bool isJumpingLeft = true;
+    private enum State { Idle, Jumping }
+    private State state = State.Idle;
 
     void Start()
     {
@@ -21,6 +23,7 @@ public class frog : MonoBehaviour
         // Check if the frog has landed to allow for the next jump
         if (!isJumping && rb.velocity.magnitude == 0)
         {
+            SetState(State.Jumping);
             isJumping = true;
             Invoke("Jump", 2f); // Adjust the delay as needed
         }
@@ -48,6 +51,26 @@ public class frog : MonoBehaviour
     void ResetIsJumping()
     {
         isJumping = false;
+        SetState(State.Idle);
+    }
+
+    void SetState(State newState)
+    {
+        // Handle state changes here (you can add more logic as needed)
+        switch (newState)
+        {
+            case State.Idle:
+                Debug.Log("State: Idle");
+                // Add idle state behavior if necessary
+                break;
+
+            case State.Jumping:
+                Debug.Log("State: Jumping");
+                // Add jumping state behavior if necessary
+                break;
+        }
+
+        state = newState;
     }
 }
 
