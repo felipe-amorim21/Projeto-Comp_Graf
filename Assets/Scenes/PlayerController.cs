@@ -112,22 +112,22 @@ public class PlayerController : MonoBehaviour
                 state = State.falling;
             }
         }
-        else if (state == State.falling) 
+        else if (state == State.falling)
         {
             if (coll.IsTouchingLayers(ground))
             {
                 state = State.idle;
             }
-            else if (state == State.hurt) 
-            {
-                if (Mathf.Abs(rb.velocity.x) < .1f)
-                {
-                    state = State.idle;
-                }
-            }
-        } 
-        
+        }
 
+        
+        else if (state == State.hurt)
+        {
+            if (Mathf.Abs(rb.velocity.x) < .1f)
+            {
+                state = State.idle;
+            }
+        }
         else if (Mathf.Abs(rb.velocity.x) > 2f)
         {
             state = State.running;
@@ -136,6 +136,5 @@ public class PlayerController : MonoBehaviour
         {
             state = State.idle;
         }
-
     }
 }
