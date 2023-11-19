@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    private AudioSource footstep;
     private enum State {idle, running, jumping, falling, hurt}
     private State state = State.idle;   
     private Collider2D coll;
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         anim = GetComponent<Animator>();
         coll = GetComponent<Collider2D>();
+        footstep = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -137,5 +139,9 @@ public class PlayerController : MonoBehaviour
         {
             state = State.idle;
         }
+    }
+    private void Footstep()
+    {
+        footstep.Play();
     }
 }
