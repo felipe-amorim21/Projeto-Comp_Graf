@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
@@ -17,7 +18,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float hurtforce = 5f;
     [SerializeField] private int cherries = 0;
     [SerializeField] private Text cherryText;
-
+    [SerializeField] private int health = 3;
+    [SerializeField] private Text healthText;
 
 
     private void Start()
@@ -27,6 +29,7 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         coll = GetComponent<Collider2D>();
         footstep = GetComponent<AudioSource>();
+        healthText.text = health.ToString();
     }
 
     private void Update()
@@ -62,6 +65,12 @@ public class PlayerController : MonoBehaviour
             else
             {
                 state = State.hurt;
+                health -= 1;
+                healthText.text = health.ToString();
+                if (health <= 0) 
+                {
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                }
                 if (other.gameObject.transform.position.x > transform.position.x)
                 {
                     rb.velocity = new Vector2(-hurtforce, rb.velocity.y);
