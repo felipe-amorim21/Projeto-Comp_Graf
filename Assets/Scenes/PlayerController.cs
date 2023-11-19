@@ -7,12 +7,13 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
-    private enum State {idle, running, jumping, falling}
+    private enum State {idle, running, jumping, falling, hurt}
     private State state = State.idle;   
     private Collider2D coll;
     [SerializeField] private LayerMask ground;
     [SerializeField] float speed = 5f;
     [SerializeField] float jumpForce = 10f;
+    [SerializeField] private float hurtforce = 5f;
     [SerializeField] private int cherries = 0;
     [SerializeField] private Text cherryText;
 
@@ -27,7 +28,10 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        movement();
+        if (state != State.hurt)
+        {
+            movement();
+        }
 
         animationState();
         anim.SetInteger("state", (int)state);
@@ -40,6 +44,30 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
             cherries += 1;
             cherryText.text = cherries.ToString();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            if (state == State.falling)
+            {
+                Destroy(other.gameObject);
+                jump();
+            }
+            else
+            {
+                state = State.hurt;
+                if (other.gameObject.transform.position.x > transform.position.x)
+                {
+                    rb.velocity = new Vector2(-hurtforce, rb.velocity.y);
+                }
+                else
+                {
+                    rb.velocity = new Vector2(hurtforce, rb.velocity.y);
+                }
+            }
         }
     }
 
@@ -65,9 +93,14 @@ public class PlayerController : MonoBehaviour
         // Jumping
         if (Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            state = State.jumping;
+            jump();
         }
+    }
+
+    private void jump() 
+    {
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        state = State.jumping;
     }
 
     private void animationState()
@@ -84,6 +117,13 @@ public class PlayerController : MonoBehaviour
             if (coll.IsTouchingLayers(ground))
             {
                 state = State.idle;
+            }
+            else if (state == State.hurt) 
+            {
+                if (Mathf.Abs(rb.velocity.x) < .1f)
+                {
+                    state = State.idle;
+                }
             }
         } 
         
