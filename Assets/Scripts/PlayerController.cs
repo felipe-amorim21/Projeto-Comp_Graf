@@ -57,9 +57,10 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
+            frog fogre = other.gameObject.GetComponent<frog>();
             if (state == State.falling)
             {
-                Destroy(other.gameObject);
+                fogre.jumpedOn();
                 jump();
             }
             else

@@ -9,12 +9,14 @@ public class frog : MonoBehaviour
     private Rigidbody2D rb;
     private bool isJumping = false;
     private bool isJumpingLeft = true;
+    private Animator anim;
     private enum State { Idle, Jumping }
     private State state = State.Idle;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
         Jump();
     }
 
@@ -72,5 +74,15 @@ public class frog : MonoBehaviour
 
         state = newState;
     }
-}
 
+    public void jumpedOn()
+    {
+        anim.SetTrigger("death");
+    }
+
+    private void death()
+    {
+        Destroy(this.gameObject);
+    }
+
+}
