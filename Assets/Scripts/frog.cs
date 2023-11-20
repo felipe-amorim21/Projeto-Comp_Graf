@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class frog : MonoBehaviour
+public class frog : Enemy
 
 {
     public float jumpForce = 2f;
     private Rigidbody2D rb;
     private bool isJumping = false;
     private bool isJumpingLeft = true;
-    private Animator anim;
     private enum State { Idle, Jumping }
     private State state = State.Idle;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         Jump();
@@ -75,14 +75,8 @@ public class frog : MonoBehaviour
         state = newState;
     }
 
-    public void jumpedOn()
-    {
-        anim.SetTrigger("death");
-    }
+    
 
-    private void death()
-    {
-        Destroy(this.gameObject);
-    }
+   
 
 }
