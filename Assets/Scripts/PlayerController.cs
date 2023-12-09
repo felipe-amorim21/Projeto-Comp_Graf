@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,8 +8,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private AudioSource footstep;
-    private enum State {idle, running, jumping, falling, hurt}
-    private State state = State.idle;   
+    private enum State { idle, running, jumping, falling, hurt }
+    private State state = State.idle;
     private Collider2D coll;
     [SerializeField] private LayerMask ground;
     [SerializeField] float speed = 5f;
@@ -22,6 +21,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Text healthText;
 
     public float yPosition;
+
+    private bool hasPowerUp = false;
+    private int jumpsRemaining = 1;
+    private bool canDoubleJump = true;
+
 
     private void Start()
     {
@@ -47,7 +51,7 @@ public class PlayerController : MonoBehaviour
         anim.SetInteger("state", (int)state);
 
         yPosition = transform.position.y;
-        if(yPosition < -10)
+        if (yPosition < -10)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
@@ -55,7 +59,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Collectable") 
+        if (collision.tag == "Collectable")
         {
             Destroy(collision.gameObject);
             cherries += 1;
@@ -64,6 +68,12 @@ public class PlayerController : MonoBehaviour
             PlayerPrefs.SetInt("CollectedCherries", cherries);
             PlayerPrefs.Save();
         }
+
+        if (collision.tag == "powerUp")
+        {
+            Destroy(collision.gameObject);
+            hasPowerUp = true;
+}
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -81,7 +91,7 @@ public class PlayerController : MonoBehaviour
                 state = State.hurt;
                 health -= 1;
                 healthText.text = health.ToString();
-                if (health <= 0) 
+                if (health <= 0)
                 {
                     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 }
@@ -117,16 +127,34 @@ public class PlayerController : MonoBehaviour
         }
 
         // Jumping
-        if (Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
+        if (Input.GetButtonDown("Jump"))
         {
-            jump();
+            if (coll.IsTouchingLayers(ground))
+            {
+                jump();
+            }
+            else if (canDoubleJump)
+            {
+                canDoubleJump = false;
+                jump();
+            }
+        }
+        if (coll.IsTouchingLayers(ground))
+        {
+            canDoubleJump = true;
+            jumpsRemaining = 1;
         }
     }
 
-    private void jump() 
+    private void jump()
     {
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         state = State.jumping;
+        if (Input.GetButtonDown("Jump") && hasPowerUp == true && jumpsRemaining == 1)
+        {
+            jumpsRemaining--;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
     }
 
     private void animationState()
@@ -146,7 +174,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        
+
         else if (state == State.hurt)
         {
             if (Mathf.Abs(rb.velocity.x) < .1f)

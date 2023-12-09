@@ -16,7 +16,7 @@ public class SceneChanger : MonoBehaviour
                 // Se for a última cena, reinicie o contador de cerejas
                 PlayerPrefs.SetInt("CollectedCherries", 0);
                 PlayerPrefs.Save();
-            }
+            }   
             SceneManager.LoadScene(SceneName);
         }
     }
