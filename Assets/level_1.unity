@@ -445,7 +445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778f5f8fdca0118459e827337f685cb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 2
+  jumpForce: 5
 --- !u!95 &81976080
 Animator:
   serializedVersion: 5

@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int health = 3;
     [SerializeField] private Text healthText;
 
+    public float yPosition;
 
     private void Start()
     {
@@ -41,6 +42,12 @@ public class PlayerController : MonoBehaviour
 
         animationState();
         anim.SetInteger("state", (int)state);
+
+        yPosition = transform.position.y;
+        if(yPosition < -8)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
