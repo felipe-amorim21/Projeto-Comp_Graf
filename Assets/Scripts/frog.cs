@@ -3,80 +3,79 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class frog : Enemy
-
 {
-    public float jumpForce = 2f;
+    [SerializeField] private float leftCap;
+    [SerializeField] private float rightCap;
+    [SerializeField] private float jumpLength = 10f;
+    [SerializeField] private float jumpHeight = 15f;
+    [SerializeField] private LayerMask ground;
+
+    private Collider2D coll;
     private Rigidbody2D rb;
-    private bool isJumping = false;
-    private bool isJumpingLeft = true;
-    private enum State { Idle, Jumping }
-    private State state = State.Idle;
+
+    private bool facingLeft = true;
 
     protected override void Start()
     {
         base.Start();
+        coll = GetComponent<Collider2D>();
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        Jump();
-    }
-
-    void Update()
-    {
-        // Check if the frog has landed to allow for the next jump
-        if (!isJumping && rb.velocity.magnitude == 0)
-        {
-            SetState(State.Jumping);
-            isJumping = true;
-            Invoke("Jump", 2f); // Adjust the delay as needed
-        }
-    }
-
-    void Jump()
-    {
-        if (isJumpingLeft)
-        {
-            // Jump to the left
-            rb.velocity = new Vector2(-jumpForce, jumpForce);
-        }
-        else
-        {
-            // Jump to the right
-            rb.velocity = new Vector2(jumpForce, jumpForce);
-        }
-
-        isJumpingLeft = !isJumpingLeft; // Switch the jump direction
-
-        // Reset the isJumping flag after a short delay to allow the frog to jump again
-        Invoke("ResetIsJumping", 0.1f);
-    }
-
-    void ResetIsJumping()
-    {
-        isJumping = false;
-        SetState(State.Idle);
-    }
-
-    void SetState(State newState)
-    {
-        // Handle state changes here (you can add more logic as needed)
-        switch (newState)
-        {
-            case State.Idle:
-                Debug.Log("State: Idle");
-                // Add idle state behavior if necessary
-                break;
-
-            case State.Jumping:
-                Debug.Log("State: Jumping");
-                // Add jumping state behavior if necessary
-                break;
-        }
-
-        state = newState;
-    }
-
-    
-
    
+    }
 
+    private void Update()
+    {
+        //Transition from Jump to Fall
+        if (anim.GetBool("Jumping"))
+        {
+            if (rb.velocity.y < -0.1)
+            {
+                anim.SetBool("Falling", true);
+                anim.SetBool("Jumping", false);
+            }
+        }
+        //Transition from Fall to Idle
+        if (coll.IsTouchingLayers(ground) && anim.GetBool("Falling"))
+        {
+            anim.SetBool("Falling", false);
+        }
+    }
+
+    private void Move()
+    {
+        if (facingLeft && transform.position.x > leftCap)
+        {
+            Jump(-jumpLength, jumpHeight);
+            anim.SetBool("Jumping", true);
+        }
+        else if (!facingLeft && transform.position.x < rightCap)
+        {
+            Jump(jumpLength, jumpHeight);
+            anim.SetBool("Jumping", true);
+        }
+
+        FlipDirectionIfNeeded();
+    }
+
+    private void Jump(float xVelocity, float yVelocity)
+    {
+        if (coll.IsTouchingLayers(ground))
+        {
+            rb.velocity = new Vector2(xVelocity, yVelocity);
+        }
+    }
+
+    private void FlipDirectionIfNeeded()
+    {
+        if ((facingLeft && transform.position.x <= leftCap) || (!facingLeft && transform.position.x >= rightCap))
+        {
+            FlipCharacterScale();
+        }
+    }
+
+    private void FlipCharacterScale()
+    {
+        transform.localScale = new Vector3(-transform.localScale.x, 1);
+        facingLeft = !facingLeft;
+    }
 }
