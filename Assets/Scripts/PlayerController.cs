@@ -31,6 +31,9 @@ public class PlayerController : MonoBehaviour
         coll = GetComponent<Collider2D>();
         footstep = GetComponent<AudioSource>();
         healthText.text = health.ToString();
+
+        cherries = PlayerPrefs.GetInt("CollectedCherries", 0);
+        cherryText.text = cherries.ToString();
     }
 
     private void Update()
@@ -44,7 +47,7 @@ public class PlayerController : MonoBehaviour
         anim.SetInteger("state", (int)state);
 
         yPosition = transform.position.y;
-        if(yPosition < -8)
+        if(yPosition < -10)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
@@ -57,6 +60,9 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
             cherries += 1;
             cherryText.text = cherries.ToString();
+
+            PlayerPrefs.SetInt("CollectedCherries", cherries);
+            PlayerPrefs.Save();
         }
     }
 

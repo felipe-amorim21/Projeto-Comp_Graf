@@ -11,6 +11,12 @@ public class SceneChanger : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player")
         {
+            if (SceneManager.GetActiveScene().name == "end")
+            {
+                // Se for a última cena, reinicie o contador de cerejas
+                PlayerPrefs.SetInt("CollectedCherries", 0);
+                PlayerPrefs.Save();
+            }
             SceneManager.LoadScene(SceneName);
         }
     }

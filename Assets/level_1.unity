@@ -46374,8 +46374,16 @@ PrefabInstance:
       value: 0.003306438
       objectReference: {fileID: 0}
     - target: {fileID: 5512115083162757306, guid: 4c7d2d3b8898dd94b82794b59f78ba0c, type: 3}
+      propertyPath: speed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5512115083162757306, guid: 4c7d2d3b8898dd94b82794b59f78ba0c, type: 3}
       propertyPath: health
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5512115083162757306, guid: 4c7d2d3b8898dd94b82794b59f78ba0c, type: 3}
+      propertyPath: jumpForce
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5512115083162757306, guid: 4c7d2d3b8898dd94b82794b59f78ba0c, type: 3}
       propertyPath: cherryText
