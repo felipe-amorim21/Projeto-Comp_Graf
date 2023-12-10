@@ -20,6 +20,7 @@ public class SceneChanger : MonoBehaviour
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             if (playerController != null)
             {
+                playerController.ResetPowerUp();
                 playerController.ResetDoubleJump();
             }
 

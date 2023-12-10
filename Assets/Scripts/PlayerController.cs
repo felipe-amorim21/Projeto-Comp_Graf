@@ -201,4 +201,10 @@ public class PlayerController : MonoBehaviour
         canDoubleJump = false;
         jumpsRemaining = 0;
     }
+
+    public void ResetPowerUp()
+    {
+        hasPowerUp = false;
+        canDoubleJump = false;
+    }
 }
