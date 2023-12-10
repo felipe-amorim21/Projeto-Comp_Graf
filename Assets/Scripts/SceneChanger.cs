@@ -16,7 +16,13 @@ public class SceneChanger : MonoBehaviour
                 // Se for a última cena, reinicie o contador de cerejas
                 PlayerPrefs.SetInt("CollectedCherries", 0);
                 PlayerPrefs.Save();
-            }   
+            }
+            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.ResetDoubleJump();
+            }
+
             SceneManager.LoadScene(SceneName);
         }
     }

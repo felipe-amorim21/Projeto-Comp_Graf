@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
 
     private bool hasPowerUp = false;
     private int jumpsRemaining = 1;
-    private bool canDoubleJump = true;
+    private bool canDoubleJump = false;
 
 
     private void Start()
@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(collision.gameObject);
             hasPowerUp = true;
+            canDoubleJump = true;
 }
     }
 
@@ -194,5 +195,10 @@ public class PlayerController : MonoBehaviour
     private void Footstep()
     {
         footstep.Play();
+    }
+    public void ResetDoubleJump()
+    {
+        canDoubleJump = false;
+        jumpsRemaining = 0;
     }
 }
