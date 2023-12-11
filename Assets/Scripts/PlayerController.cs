@@ -7,7 +7,8 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
-    private AudioSource footstep;
+    protected AudioSource[] audioSources;
+
     private enum State { idle, running, jumping, falling, hurt }
     private State state = State.idle;
     private Collider2D coll;
@@ -22,22 +23,29 @@ public class PlayerController : MonoBehaviour
 
     public float yPosition;
 
-    private bool hasPowerUp = false;
-    private int jumpsRemaining = 1;
-    private bool canDoubleJump = false;
+    [SerializeField] private bool hasPowerUp = false;
+    [SerializeField] private int jumpsRemaining = 1;
+    [SerializeField] private bool canDoubleJump = false;
 
 
     private void Start()
     {
+        if(SceneManager.GetActiveScene().name == "level_1")
+        {
+            cherries = 0;
+            PlayerPrefs.SetInt("CollectedCherries", cherries);
+            PlayerPrefs.Save();
+        }
         rb = GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         anim = GetComponent<Animator>();
         coll = GetComponent<Collider2D>();
-        footstep = GetComponent<AudioSource>();
+        audioSources = GetComponents<AudioSource>();
         healthText.text = health.ToString();
 
         cherries = PlayerPrefs.GetInt("CollectedCherries", 0);
         cherryText.text = cherries.ToString();
+        ResetPowerUp();
     }
 
     private void Update()
@@ -53,7 +61,9 @@ public class PlayerController : MonoBehaviour
         yPosition = transform.position.y;
         if (yPosition < -10)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            audioSources[3].Play();
+            float delay = Mathf.Max(0, audioSources[3].clip.length - 0.8f);
+            Invoke("LoadSceneAfterDelay", delay);
         }
     }
 
@@ -62,6 +72,7 @@ public class PlayerController : MonoBehaviour
         if (collision.tag == "Collectable")
         {
             Destroy(collision.gameObject);
+            audioSources[0].Play();
             cherries += 1;
             cherryText.text = cherries.ToString();
 
@@ -72,6 +83,7 @@ public class PlayerController : MonoBehaviour
         if (collision.tag == "powerUp")
         {
             Destroy(collision.gameObject);
+            audioSources[1].Play();
             hasPowerUp = true;
             canDoubleJump = true;
 }
@@ -90,11 +102,14 @@ public class PlayerController : MonoBehaviour
             else
             {
                 state = State.hurt;
+                audioSources[2].Play();
                 health -= 1;
                 healthText.text = health.ToString();
                 if (health <= 0)
                 {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    audioSources[3].Play();
+                    float delay = Mathf.Max(0, audioSources[3].clip.length - 0.8f);
+                    Invoke("LoadSceneAfterDelay", delay);
                 }
                 if (other.gameObject.transform.position.x > transform.position.x)
                 {
@@ -110,6 +125,15 @@ public class PlayerController : MonoBehaviour
 
     private void movement()
     {
+        if (coll.IsTouchingLayers(ground))
+        {
+            if(hasPowerUp == true)
+            {
+                canDoubleJump = true;
+                jumpsRemaining = 1;
+
+            }
+        }
         float hDirection = Input.GetAxis("Horizontal");
 
         // Moving left
@@ -140,11 +164,7 @@ public class PlayerController : MonoBehaviour
                 jump();
             }
         }
-        if (coll.IsTouchingLayers(ground))
-        {
-            canDoubleJump = true;
-            jumpsRemaining = 1;
-        }
+       
     }
 
     private void jump()
@@ -192,19 +212,35 @@ public class PlayerController : MonoBehaviour
             state = State.idle;
         }
     }
-    private void Footstep()
+    /*private void Footstep()
     {
         footstep.Play();
-    }
+    }*/
     public void ResetDoubleJump()
     {
         canDoubleJump = false;
         jumpsRemaining = 0;
     }
 
+    /*public void ResetPowerUp()
+    {
+        hasPowerUp = false;
+        canDoubleJump = false;
+    }*/
+
+    private void LoadSceneAfterDelay()
+    {
+        ResetPowerUp();
+        cherries = 0;
+        PlayerPrefs.SetInt("CollectedCherries", cherries);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
     public void ResetPowerUp()
     {
         hasPowerUp = false;
         canDoubleJump = false;
+        jumpsRemaining = 1; // Reset jumps remaining as well
     }
 }

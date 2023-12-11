@@ -17,13 +17,19 @@ public class SceneChanger : MonoBehaviour
                 PlayerPrefs.SetInt("CollectedCherries", 0);
                 PlayerPrefs.Save();
             }
+            if (SceneManager.GetActiveScene().name == "level_1") // Change "Level1" to the actual name of your level 1 scene
+            {
+                // If the current scene is level 1, reset the amount of cherries to 0
+                PlayerPrefs.SetInt("CollectedCherries", 0);
+                PlayerPrefs.Save();
+            }
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             if (playerController != null)
             {
                 playerController.ResetPowerUp();
                 playerController.ResetDoubleJump();
             }
-
+            
             SceneManager.LoadScene(SceneName);
         }
     }
